@@ -11,7 +11,7 @@ const QuizList = ({ username }) => {
     const token = localStorage.getItem('token');
     if (token) {
       console.log('Fetching quizzes with token:', token);
-      axios.get('http://localhost:5000/api/quizzes', {
+      axios.get('https://endo-quiz-app.onrender.com/api/quizzes', {
         headers: {
           Authorization: `Bearer ${token}`
         }

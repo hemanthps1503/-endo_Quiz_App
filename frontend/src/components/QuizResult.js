@@ -30,7 +30,7 @@ const QuizResult = () => {
   }, [navigate]);
 
   const sendEmail = () => {
-    axios.post('http://localhost:5000/api/send-email', {
+    axios.post('https://endo-quiz-app.onrender.com/api/send-email', {
       email,
       totalQuestions,
       correctAnswers,

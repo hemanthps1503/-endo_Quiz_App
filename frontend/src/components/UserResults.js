@@ -6,7 +6,7 @@ const UserResults = ({ userId }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    axios.get(`http://localhost:5000/api/users/${userId}/results`, {
+    axios.get(`https://endo-quiz-app.onrender.com/api/users/${userId}/results`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

@@ -19,7 +19,7 @@ const App = () => {
     const storedUserId = localStorage.getItem('userId');
     const storedToken = localStorage.getItem('token');
     if (storedUser && storedUserId && storedToken) {
-      axios.get('http://localhost:5000/api/validate-token', {
+      axios.get('https://endo-quiz-app.onrender.com/api/validate-token', {
         headers: { Authorization: `Bearer ${storedToken}` }
       })
       .then(response => {

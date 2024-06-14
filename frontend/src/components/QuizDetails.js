@@ -14,7 +14,7 @@ const QuizDetails = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios
-      .get(`http://localhost:5000/api/quizzes/${id}/questions`, {
+      .get(`https://endo-quiz-app.onrender.com/api/quizzes/${id}/questions`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

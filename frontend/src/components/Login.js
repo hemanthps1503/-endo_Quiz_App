@@ -11,7 +11,7 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
+      const response = await axios.post('https://endo-quiz-app.onrender.com/api/users/login', { email, password });
       const { username, userId, token } = response.data;
       handleLogin(email, userId, token); // Call handleLogin function
       onLogin(username, userId, token); // Call the onLogin prop function
