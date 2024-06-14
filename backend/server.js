@@ -6,6 +6,7 @@ const userRoutes = require('./routes/userRoutes');
 const tokenRoutes = require('./routes/tokenRoutes'); 
 const emailRoutes = require('./routes/emailRoutes');
 const pool = require('./db/db');  // Import the database connection
+require('dotenv').config(); 
 
 const app = express();
 const PORT = 5000;
@@ -16,6 +17,8 @@ app.use('/api', quizRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', tokenRoutes);
 app.use('/api', emailRoutes);
+
+
 
 
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import QuestionPalette from './QuestionPalette'; // Import the QuestionPalette component
 
 const QuizDetails = () => {
   const { id } = useParams();
@@ -8,9 +9,10 @@ const QuizDetails = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [markedForReview, setMarkedForReview] = useState({});
   const [showWarning, setShowWarning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30); // Set timer to 30 seconds
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const calculateResult = useCallback(() => {
     let correctAnswers = 0;
@@ -70,7 +72,7 @@ const QuizDetails = () => {
 
   const checkUnansweredQuestions = () => {
     const unanswered = questions.some((_, index) => !answers[index]);
-    if (unanswered) {
+    if (unanswered || Object.values(markedForReview).includes(true)) {
       setShowWarning(true);
     } else {
       calculateResult();
@@ -79,6 +81,13 @@ const QuizDetails = () => {
 
   const endRound = () => {
     checkUnansweredQuestions();
+  };
+
+  const handleMarkForReview = () => {
+    setMarkedForReview({
+      ...markedForReview,
+      [currentQuestionIndex]: !markedForReview[currentQuestionIndex],
+    });
   };
 
   const toggleMenu = () => {
@@ -90,57 +99,63 @@ const QuizDetails = () => {
     setIsMenuOpen(false);
   };
 
+  const handleBackArrow = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col p-4 bg-gray-100">
       <div className="flex justify-between items-center p-4 bg-white rounded-lg shadow mb-4">
-        <div className="relative flex items-center space-x-4">
-          {currentQuestionIndex > 0 && (
+        <div className="flex items-center">
+          <button
+            className="bg-blue-600 text-white p-2 rounded-full mr-2"
+            onClick={handleBackArrow}
+            disabled={currentQuestionIndex === 0}
+          >
+            &#8592;
+          </button>
+          <div className="relative">
             <button
               className="bg-blue-600 text-white p-2 rounded-full"
-              onClick={handlePrevious}
+              onClick={toggleMenu}
             >
-              &#8592;
+              &#x2630;
             </button>
-          )}
-          <button
-            className="bg-blue-600 text-white p-2 rounded-full"
-            onClick={toggleMenu}
-          >
-            &#x2630;
-          </button>
-          {isMenuOpen && (
-            <div className="absolute left-0 top-12 bg-white shadow-lg rounded mt-2 w-56 z-10">
-              <ul className="divide-y divide-gray-200">
-                {questions.map((question, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => selectQuestion(index)}
-                  >
-                    <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center border rounded-full">
-                      {index + 1}
-                    </span>
-                    <div className="ml-2 flex-grow">
-                      <span className="block font-medium">MCQ {index + 1}</span>
-                      <span className="block text-gray-500 text-sm">
-                        5 Points
+            {isMenuOpen && (
+              <div className="absolute left-0 top-12 bg-white shadow-lg rounded mt-2 w-56 z-10">
+                <ul className="divide-y divide-gray-200">
+                  {questions.map((question, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => selectQuestion(index)}
+                    >
+                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center border rounded-full">
+                        {index + 1}
                       </span>
-                    </div>
-                    <span
-                      className={`flex-shrink-0 w-4 h-4 rounded-full ml-2 ${
-                        answers[index] ? 'bg-green-600' : 'bg-gray-300'
-                      }`}
-                    ></span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+                      <div className="ml-2 flex-grow">
+                        <span className="block font-medium">MCQ {index + 1}</span>
+                        <span className="block text-gray-500 text-sm">
+                          5 Points
+                        </span>
+                      </div>
+                      <span
+                        className={`flex-shrink-0 w-4 h-4 rounded-full ml-2 ${
+                          answers[index] ? 'bg-green-600' : 'bg-gray-300'
+                        }`}
+                      ></span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex items-center justify-center flex-grow">
-          <span className="text-xl font-bold text-red-600 bg-yellow-200 p-2 rounded">
-            Time Left: {timeLeft}s
-          </span>
+        <div className="text-center text-gray-700 flex flex-col items-center bg-red-100 p-2 rounded-full">
+          <span className="font-semibold">Time Left:</span>
+          <span className="text-xl">{timeLeft}s</span>
         </div>
         <button
           className="bg-red-600 text-white p-2 rounded-full"
@@ -183,35 +198,49 @@ const QuizDetails = () => {
               </li>
             ))}
           </ul>
-        </div>
-      </div>
-      <div className="flex justify-center items-center w-full mt-4">
-        <div className="flex justify-between items-center w-full bg-white p-4 rounded-lg shadow-lg">
-          {currentQuestionIndex > 0 && (
-            <button
-              className="bg-blue-600 text-white p-2 rounded-full"
-              onClick={handlePrevious}
-            >
-              &#8592; Previous
-            </button>
-          )}
           <button
-            className="bg-yellow-400 text-white p-2 rounded-full"
-            onClick={handleNext}
+            className={`mt-4 p-2 rounded-lg ${markedForReview[currentQuestionIndex] ? 'bg-blue-600' : 'bg-gray-600'} text-white`}
+            onClick={handleMarkForReview}
           >
-            {currentQuestionIndex === questions.length - 1
-              ? 'Finish'
-              : 'Save & Next'}{' '}
-            &#8594;
+            {markedForReview[currentQuestionIndex] ? 'Unmark Review' : 'Mark for Review'}
           </button>
         </div>
+      </div>
+      <div className="flex justify-between items-center w-full mt-4 bg-white p-4 rounded-lg shadow-lg">
+        {currentQuestionIndex > 0 && (
+          <button
+            className="bg-blue-600 text-white p-2 rounded-full"
+            onClick={handlePrevious}
+          >
+            &#8592; Previous
+          </button>
+        )}
+        <button
+          className="bg-yellow-400 text-white p-2 rounded-full"
+          onClick={handleNext}
+          style={{ marginLeft: 'auto' }}
+        >
+          {currentQuestionIndex === questions.length - 1
+            ? 'Finish'
+            : 'Save & Next'}{' '}
+          &#8594;
+        </button>
+      </div>
+      <div className="flex justify-center items-center w-full mt-4">
+        <QuestionPalette
+          questions={questions}
+          answers={answers}
+          markedForReview={markedForReview}
+          selectQuestion={selectQuestion}
+          currentQuestionIndex={currentQuestionIndex}
+        />
       </div>
 
       {showWarning && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
             <h2 className="text-xl font-semibold mb-4">
-              You have some unanswered questions.
+              You have some unanswered questions or marked for review.
             </h2>
             <p className="mb-6">Please check the menu bar notifications.</p>
             <div className="flex justify-around">

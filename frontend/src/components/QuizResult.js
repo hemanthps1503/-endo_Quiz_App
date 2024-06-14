@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
@@ -16,10 +16,28 @@ const QuizResult = () => {
     userAnswers: {}
   };
   const email = localStorage.getItem('email');
+  const username = localStorage.getItem('username');
   const wrongAnswers = totalQuestions - correctAnswers;
   const [emailSent, setEmailSent] = useState(false);
-  const [confirmEmail, setConfirmEmail] = useState(true);
   const [showReview, setShowReview] = useState(false);
+
+  const sendEmailToUser = useCallback(() => {
+    console.log('Sending request to backend to send email...');
+    axios.post('https://endo-quiz-app.onrender.com/api/send-email', {
+      email,
+      username,
+      totalQuestions,
+      correctAnswers,
+      wrongAnswers
+    })
+      .then(response => {
+        console.log('Email sent to user:', response.data);
+        setEmailSent(true);
+      })
+      .catch(error => {
+        console.error('Error sending email to user:', error);
+      });
+  }, [email, username, totalQuestions, correctAnswers, wrongAnswers]);
 
   useEffect(() => {
     const handlePopState = (event) => {
@@ -30,35 +48,13 @@ const QuizResult = () => {
     window.history.pushState(null, null, window.location.pathname);
     window.addEventListener('popstate', handlePopState);
 
+    // Send email to user when the component mounts
+    sendEmailToUser();
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [navigate]);
-
-  const sendEmail = () => {
-    axios.post('https://endo-quiz-app.onrender.com/api/send-email', {
-      email,
-      totalQuestions,
-      correctAnswers,
-      wrongAnswers
-    })
-      .then(response => {
-        console.log('Email sent:', response.data);
-        setEmailSent(true);
-        setConfirmEmail(false);
-      })
-      .catch(error => {
-        console.error('Error sending email:', error);
-        setEmailSent(false);
-      });
-  };
-
-  const handleSendEmailConfirmation = (confirm) => {
-    setConfirmEmail(false);
-    if (confirm) {
-      sendEmail();
-    }
-  };
+  }, [navigate, sendEmailToUser]);
 
   const handleLogout = () => {
     localStorage.removeItem('username');
@@ -74,6 +70,7 @@ const QuizResult = () => {
 
   const handleReviewAnswers = () => {
     setShowReview(true);
+    setEmailSent(false);  // Hide email confirmation message before showing review answers
   };
 
   const attendedData = {
@@ -113,18 +110,6 @@ const QuizResult = () => {
         </div>
       </div>
 
-      {confirmEmail && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <p className="text-gray-700 mb-4">Do you want your test report sent to your email?</p>
-            <div className="flex space-x-4 justify-center">
-              <button onClick={() => handleSendEmailConfirmation(true)} className="bg-green-600 text-white px-4 py-2 rounded-lg">Yes</button>
-              <button onClick={() => handleSendEmailConfirmation(false)} className="bg-red-600 text-white px-4 py-2 rounded-lg">No</button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="mt-8">
         <button onClick={handleReviewAnswers} className="bg-yellow-600 text-white px-4 py-2 rounded-lg mr-4">Review Answers</button>
         <button onClick={handleGoHome} className="bg-green-600 text-white px-4 py-2 rounded-lg mr-4">Go Home</button>
@@ -133,10 +118,10 @@ const QuizResult = () => {
 
       {showReview && <ReviewAnswers questions={questions} userAnswers={userAnswers} setShowReview={setShowReview} />}
 
-      {emailSent && (
+      {emailSent && !showReview && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <p className="text-green-600 mb-4">Test report sent to your email successfully.</p>
+            <p className="text-green-600 mb-4">Test report submitted successfully.</p>
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
               <button onClick={handleReviewAnswers} className="bg-yellow-600 text-white px-4 py-2 rounded-lg">Review Answers</button>
               <button onClick={handleGoHome} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Go Home</button>
