@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
@@ -9,16 +9,22 @@ Chart.register(ArcElement, Tooltip, Legend);
 const QuizResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { totalQuestions, correctAnswers } = location.state || { totalQuestions: 0, correctAnswers: 0 };
-  const email = localStorage.getItem('email'); 
+  const { totalQuestions, correctAnswers, questions, userAnswers } = location.state || {
+    totalQuestions: 0,
+    correctAnswers: 0,
+    questions: [],
+    userAnswers: {}
+  };
+  const email = localStorage.getItem('email');
   const wrongAnswers = totalQuestions - correctAnswers;
   const [emailSent, setEmailSent] = useState(false);
-  const [confirmEmail, setConfirmEmail] = useState(true); // Initial state is true to show the confirmation dialog
+  const [confirmEmail, setConfirmEmail] = useState(true);
+  const [showReview, setShowReview] = useState(false);
 
   useEffect(() => {
     const handlePopState = (event) => {
       event.preventDefault();
-      navigate('/login'); 
+      navigate('/login');
     };
 
     window.history.pushState(null, null, window.location.pathname);
@@ -36,19 +42,19 @@ const QuizResult = () => {
       correctAnswers,
       wrongAnswers
     })
-    .then(response => {
-      console.log('Email sent:', response.data);
-      setEmailSent(true);
-      setConfirmEmail(false); // Hide confirmation dialog after sending email
-    })
-    .catch(error => {
-      console.error('Error sending email:', error);
-      setEmailSent(false);
-    });
+      .then(response => {
+        console.log('Email sent:', response.data);
+        setEmailSent(true);
+        setConfirmEmail(false);
+      })
+      .catch(error => {
+        console.error('Error sending email:', error);
+        setEmailSent(false);
+      });
   };
 
   const handleSendEmailConfirmation = (confirm) => {
-    setConfirmEmail(false); // Hide confirmation dialog
+    setConfirmEmail(false);
     if (confirm) {
       sendEmail();
     }
@@ -64,6 +70,10 @@ const QuizResult = () => {
 
   const handleGoHome = () => {
     navigate('/');
+  };
+
+  const handleReviewAnswers = () => {
+    setShowReview(true);
   };
 
   const attendedData = {
@@ -115,6 +125,14 @@ const QuizResult = () => {
         </div>
       )}
 
+      <div className="mt-8">
+        <button onClick={handleReviewAnswers} className="bg-yellow-600 text-white px-4 py-2 rounded-lg mr-4">Review Answers</button>
+        <button onClick={handleGoHome} className="bg-green-600 text-white px-4 py-2 rounded-lg mr-4">Go Home</button>
+        <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded-lg">Logout</button>
+      </div>
+
+      {showReview && <ReviewAnswers questions={questions} userAnswers={userAnswers} />}
+
       {emailSent && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
@@ -126,6 +144,27 @@ const QuizResult = () => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+const ReviewAnswers = ({ questions, userAnswers }) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-h-full overflow-auto">
+        <h2 className="text-2xl font-bold mb-4">Review Your Answers</h2>
+        {questions.map((question, index) => (
+          <div key={index} className="mb-4">
+            <p className="font-semibold">{question.question}</p>
+            <p>Your Answer: {userAnswers[index] || 'Not Answered'}</p>
+            <p>Correct Answer: {question.correct_option}</p>
+            <p className={`mt-1 ${userAnswers[index] === question.correct_option ? 'text-green-600' : 'text-red-600'}`}>
+              {userAnswers[index] === question.correct_option ? 'Correct' : 'Incorrect'}
+            </p>
+          </div>
+        ))}
+        <button onClick={() => window.location.reload()} className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-4">Close</button>
+      </div>
     </div>
   );
 };

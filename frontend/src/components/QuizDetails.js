@@ -52,7 +52,7 @@ const QuizDetails = () => {
       }
     });
     navigate('/result', {
-      state: { totalQuestions: questions.length, correctAnswers },
+      state: { totalQuestions: questions.length, correctAnswers, questions, userAnswers: answers },
     });
   };
 
