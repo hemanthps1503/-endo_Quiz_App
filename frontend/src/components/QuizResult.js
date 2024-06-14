@@ -73,6 +73,7 @@ const QuizResult = () => {
   };
 
   const handleReviewAnswers = () => {
+    setEmailSent(false); // Hide the email success message
     setShowReview(true);
   };
 
