@@ -16,7 +16,6 @@ const Login = ({ onLogin }) => {
       const { username, userId, token } = response.data;
       handleLogin(email, userId, token); // Call handleLogin function
       onLogin(username, userId, token); // Call the onLogin prop function
-      toast.success('User logged in successfully!');
       navigate('/');
     } catch (error) {
       setError('Invalid email or password');
