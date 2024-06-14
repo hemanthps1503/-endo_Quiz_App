@@ -73,12 +73,7 @@ const QuizResult = () => {
   };
 
   const handleReviewAnswers = () => {
-    setEmailSent(false); // Hide the email success message
     setShowReview(true);
-  };
-
-  const handleCloseReviewAnswers = () => {
-    setShowReview(false); // Hide the review answers modal
   };
 
   const attendedData = {
@@ -136,7 +131,7 @@ const QuizResult = () => {
         <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded-lg">Logout</button>
       </div>
 
-      {showReview && <ReviewAnswers questions={questions} userAnswers={userAnswers} onClose={handleCloseReviewAnswers} />}
+      {showReview && <ReviewAnswers questions={questions} userAnswers={userAnswers} setShowReview={setShowReview} />}
 
       {emailSent && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
@@ -154,7 +149,7 @@ const QuizResult = () => {
   );
 };
 
-const ReviewAnswers = ({ questions, userAnswers, onClose }) => {
+const ReviewAnswers = ({ questions, userAnswers, setShowReview }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
       <div className="bg-white p-8 rounded-lg shadow-lg max-h-full overflow-auto">
@@ -169,7 +164,7 @@ const ReviewAnswers = ({ questions, userAnswers, onClose }) => {
             </p>
           </div>
         ))}
-        <button onClick={onClose} className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-4">Close</button>
+        <button onClick={() => setShowReview(false)} className="bg-blue-600 text-white px-4 py-2 rounded-lg mt-4">Close</button>
       </div>
     </div>
   );

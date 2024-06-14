@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,20 @@ const QuizDetails = () => {
   const [answers, setAnswers] = useState({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(30); // Set timer to 30 seconds
+
+  const calculateResult = useCallback(() => {
+    let correctAnswers = 0;
+    questions.forEach((question, index) => {
+      if (question.correct_option === answers[index]) {
+        correctAnswers++;
+      }
+    });
+    const totalQuestions = questions.length;
+    navigate('/result', {
+      state: { totalQuestions, correctAnswers, questions, userAnswers: answers },
+    });
+  }, [answers, navigate, questions]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -22,6 +36,16 @@ const QuizDetails = () => {
       .then((response) => setQuestions(response.data))
       .catch((error) => console.error('Error fetching questions:', error));
   }, [id]);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      calculateResult();
+    }
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, calculateResult]);
 
   const handleOptionChange = (event) => {
     setAnswers({
@@ -42,18 +66,6 @@ const QuizDetails = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-  };
-
-  const calculateResult = () => {
-    let correctAnswers = 0;
-    questions.forEach((question, index) => {
-      if (question.correct_option === answers[index]) {
-        correctAnswers++;
-      }
-    });
-    navigate('/result', {
-      state: { totalQuestions: questions.length, correctAnswers, questions, userAnswers: answers },
-    });
   };
 
   const checkUnansweredQuestions = () => {
@@ -124,6 +136,11 @@ const QuizDetails = () => {
               </ul>
             </div>
           )}
+        </div>
+        <div className="flex items-center justify-center flex-grow">
+          <span className="text-xl font-bold text-red-600 bg-yellow-200 p-2 rounded">
+            Time Left: {timeLeft}s
+          </span>
         </div>
         <button
           className="bg-red-600 text-white p-2 rounded-full"
