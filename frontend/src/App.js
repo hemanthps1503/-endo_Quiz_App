@@ -6,7 +6,7 @@ import QuizResult from './components/QuizResult';
 import Login from './components/Login';
 import Register from './components/Register';
 import UserResults from './components/UserResults';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
@@ -59,7 +59,6 @@ const App = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('userId');
     localStorage.removeItem('token');
-    toast.info('User logged out.');
   };
 
   const location = useLocation();
