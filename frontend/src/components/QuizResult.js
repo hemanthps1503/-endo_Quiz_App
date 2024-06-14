@@ -22,7 +22,6 @@ const QuizResult = () => {
   const [showReview, setShowReview] = useState(false);
 
   const sendEmailToUser = useCallback(() => {
-    console.log('Sending request to backend to send email...');
     axios.post('https://endo-quiz-app.onrender.com/api/send-email', {
       email,
       username,
@@ -30,13 +29,13 @@ const QuizResult = () => {
       correctAnswers,
       wrongAnswers
     })
-      .then(response => {
-        console.log('Email sent to user:', response.data);
-        setEmailSent(true);
-      })
-      .catch(error => {
-        console.error('Error sending email to user:', error);
-      });
+    .then(response => {
+      console.log('Email sent to user:', response.data);
+      setEmailSent(true);
+    })
+    .catch(error => {
+      console.error('Error sending email to user:', error);
+    });
   }, [email, username, totalQuestions, correctAnswers, wrongAnswers]);
 
   useEffect(() => {

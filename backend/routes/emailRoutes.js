@@ -6,21 +6,20 @@ const path = require('path');
 const router = express.Router();
 require('dotenv').config();
 
-const generateOrUpdatePDF = async (totalQuestions, correctAnswers, wrongAnswers) => {
+const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
-  const newResult = `Total Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n\n`;
+  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n\n`;
 
   return new Promise((resolve, reject) => {
     if (fs.existsSync(filePath)) {
-      console.log('PDF already exists. Appending new results...');
-      // Append new result to existing PDF
-      const existingPDF = fs.readFileSync(filePath);
+      console.log('PDF already exists. Updating with new results...');
+      const existingPDF = fs.readFileSync(filePath, 'utf8');
       const tempFilePath = path.join(__dirname, '../temp-results.pdf');
       const tempDoc = new PDFDocument();
       const tempStream = fs.createWriteStream(tempFilePath);
 
       tempDoc.pipe(tempStream);
-      tempDoc.text(existingPDF.toString());
+      tempDoc.text(existingPDF);
       tempDoc.text(newResult);
       tempDoc.end();
 
@@ -36,7 +35,6 @@ const generateOrUpdatePDF = async (totalQuestions, correctAnswers, wrongAnswers)
       });
     } else {
       console.log('Creating a new PDF with the result...');
-      // Create new PDF with the result
       const doc = new PDFDocument();
       const writeStream = fs.createWriteStream(filePath);
 
@@ -62,7 +60,7 @@ router.post('/send-email', async (req, res) => {
 
   try {
     console.log('Generating PDF...');
-    const filePath = await generateOrUpdatePDF(totalQuestions, correctAnswers, wrongAnswers);
+    const filePath = await generateOrUpdatePDF(username, totalQuestions, correctAnswers, wrongAnswers);
     console.log('PDF generated at:', filePath);
 
     let transporter = nodemailer.createTransport({
