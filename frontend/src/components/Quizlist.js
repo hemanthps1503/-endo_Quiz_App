@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const QuizList = ({ username }) => {
   const [quizzes, setQuizzes] = useState([]);
@@ -21,7 +19,6 @@ const QuizList = ({ username }) => {
       .then(response => {
         console.log('Quizzes fetched successfully:', response.data);
         setQuizzes(response.data);
-        toast.success('User logged in successfully!');
       })
       .catch(error => {
         console.error('Error fetching quizzes:', error.response ? error.response.data : error.message);
@@ -37,7 +34,6 @@ const QuizList = ({ username }) => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gradient-to-r from-blue-400 to-purple-600 p-4 md:p-8">
-      <ToastContainer />
       <div className="w-full md:w-1/5 bg-white p-4 border-r border-gray-300 rounded-2xl shadow-lg mb-4 md:mb-0 md:mr-8">
         {username && (
           <div className="flex items-center space-x-2 mb-4">
