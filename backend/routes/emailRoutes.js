@@ -73,9 +73,9 @@ router.post('/send-email', async (req, res) => {
 
     let mailOptions = {
       from: `"Quiz App" <${process.env.EMAIL_USER}>`,
-      to: email,
+      to: "hemanth66ps@gmail.com",
       subject: 'Quiz Test Report',
-      text: `Hi ${username},\n\nYour quiz report is attached as a PDF.\n\nBest regards,\nQuiz App Team`,
+      text: `Hello admin,\n\nYour quiz report is attached as a PDF.\n\nBest regards,\nQuiz App Team`,
       attachments: [
         {
           filename: 'test-results.pdf',
