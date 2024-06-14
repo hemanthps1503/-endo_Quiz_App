@@ -17,6 +17,8 @@ app.use('/api/users', userRoutes);
 app.use('/api', tokenRoutes);
 app.use('/api', emailRoutes);
 
+
+
 // Check database connection
 pool.getConnection((err, connection) => {
   if (err) {

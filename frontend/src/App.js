@@ -5,7 +5,6 @@ import QuizDetails from './components/QuizDetails';
 import QuizResult from './components/QuizResult';
 import Login from './components/Login';
 import Register from './components/Register';
-import UserResults from './components/UserResults';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -84,7 +83,6 @@ const App = () => {
           <Route path="/" element={isAuthenticated ? <QuizList username={username} /> : <Navigate to="/login" />} />
           <Route path="/quiz/:id" element={isAuthenticated ? <QuizDetails /> : <Navigate to="/login" />} />
           <Route path="/result" element={isAuthenticated ? <QuizResult /> : <Navigate to="/login" />} />
-          <Route path="/results" element={isAuthenticated ? <UserResults userId={userId} /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register />} />
         </Routes>

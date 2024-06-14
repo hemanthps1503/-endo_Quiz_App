@@ -24,29 +24,7 @@ router.get('/quizzes/:quizId/questions', authenticateToken, async (req, res) => 
   }
 });
 
-// Fetch results for a specific user
-router.get('/users/:userId/results', authenticateToken, async (req, res) => {
-  const userId = req.params.userId;
-  try {
-    const [results] = await pool.promise().query(
-      'SELECT r.id, r.score, q.name AS quiz_name, q.total_questions, (q.total_questions * 5) AS total_points FROM results r JOIN quizzes q ON r.quiz_id = q.id WHERE r.user_id = ?',
-      [userId]
-    );
-    res.json(results);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
-// Save quiz result
-router.post('/results', authenticateToken, async (req, res) => {
-  const { user_id, quiz_id, score } = req.body;
-  try {
-    await pool.promise().query('INSERT INTO results (user_id, quiz_id, score) VALUES (?, ?, ?)', [user_id, quiz_id, score]);
-    res.status(201).json({ message: 'Result saved successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+
 
 module.exports = router;
