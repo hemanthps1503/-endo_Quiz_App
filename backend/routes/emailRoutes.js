@@ -8,50 +8,36 @@ require('dotenv').config();
 
 const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
-  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n\n`;
+  const tempFilePath = path.join(__dirname, '../temp-results.pdf');
+  const newResult = `Username: ${username}    Total Questions: ${totalQuestions}   Correct Answers: ${correctAnswers}\n`;
+
+  // Collect existing entries
+  let existingEntries = '';
+
+  if (fs.existsSync(filePath)) {
+    const existingPDF = fs.readFileSync(filePath, 'utf8');
+    existingEntries = existingPDF;
+  }
 
   return new Promise((resolve, reject) => {
-    if (fs.existsSync(filePath)) {
-      console.log('PDF already exists. Updating with new results...');
-      const existingPDF = fs.readFileSync(filePath, 'utf8');
-      const tempFilePath = path.join(__dirname, '../temp-results.pdf');
-      const tempDoc = new PDFDocument();
-      const tempStream = fs.createWriteStream(tempFilePath);
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream(tempFilePath);
 
-      tempDoc.pipe(tempStream);
-      tempDoc.text(existingPDF);
-      tempDoc.text(newResult);
-      tempDoc.end();
+    doc.pipe(writeStream);
+    doc.text(existingEntries);
+    doc.text(newResult);
+    doc.end();
 
-      tempStream.on('finish', () => {
-        fs.renameSync(tempFilePath, filePath);
-        console.log('PDF updated successfully');
-        resolve(filePath);
-      });
+    writeStream.on('finish', () => {
+      fs.renameSync(tempFilePath, filePath);
+      console.log('PDF updated successfully');
+      resolve(filePath);
+    });
 
-      tempStream.on('error', (err) => {
-        console.error('Error updating PDF:', err);
-        reject(err);
-      });
-    } else {
-      console.log('Creating a new PDF with the result...');
-      const doc = new PDFDocument();
-      const writeStream = fs.createWriteStream(filePath);
-
-      doc.pipe(writeStream);
-      doc.text(newResult);
-      doc.end();
-
-      writeStream.on('finish', () => {
-        console.log('PDF generated successfully');
-        resolve(filePath);
-      });
-
-      writeStream.on('error', (err) => {
-        console.error('Error generating PDF:', err);
-        reject(err);
-      });
-    }
+    writeStream.on('error', (err) => {
+      console.error('Error updating PDF:', err);
+      reject(err);
+    });
   });
 };
 
