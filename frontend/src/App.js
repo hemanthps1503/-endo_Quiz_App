@@ -50,7 +50,6 @@ const App = () => {
     localStorage.setItem('username', name);
     localStorage.setItem('userId', id);
     localStorage.setItem('token', token);
-    toast.success('User logged in successfully!');
   };
 
   const handleLogout = () => {

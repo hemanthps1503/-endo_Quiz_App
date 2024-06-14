@@ -44,7 +44,6 @@ const Login = ({ onLogin }) => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <p className="text-sm text-gray-500">Provide personal email to get your test reports.</p>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Password</label>
