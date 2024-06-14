@@ -6,6 +6,7 @@ import QuizResult from './components/QuizResult';
 import Login from './components/Login';
 import Register from './components/Register';
 import UserResults from './components/UserResults';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 const App = () => {
