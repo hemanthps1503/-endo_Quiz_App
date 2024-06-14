@@ -6,6 +6,7 @@ import QuizResult from './components/QuizResult';
 import Login from './components/Login';
 import Register from './components/Register';
 import UserResults from './components/UserResults';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
@@ -49,6 +50,7 @@ const App = () => {
     localStorage.setItem('username', name);
     localStorage.setItem('userId', id);
     localStorage.setItem('token', token);
+    toast.success('User logged in successfully!');
   };
 
   const handleLogout = () => {
@@ -58,6 +60,7 @@ const App = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('userId');
     localStorage.removeItem('token');
+    toast.info('User logged out.');
   };
 
   const location = useLocation();
@@ -69,6 +72,7 @@ const App = () => {
 
   return (
     <>
+      <ToastContainer />
       {shouldShowHeader && (
         <div className="fixed top-0 left-0 w-full z-50 bg-white p-4 shadow flex justify-between items-center">
           <div className="text-2xl font-bold text-purple-600">Øendo</div>
