@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -16,8 +18,10 @@ const Login = ({ onLogin }) => {
       handleLogin(email, userId, token); // Call handleLogin function
       onLogin(username, userId, token); // Call the onLogin prop function
       navigate('/');
+      toast.success('User logged in successfully!');
     } catch (error) {
       setError('Invalid email or password');
+      toast.error('Invalid email or password');
     }
   };
 
@@ -29,6 +33,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
+      <ToastContainer />
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h1 className="text-2xl font-bold mb-4">Login</h1>
         <form onSubmit={handleSubmit}>
@@ -41,6 +46,7 @@ const Login = ({ onLogin }) => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <p className="text-sm text-gray-500">Provide personal email to get your test reports.</p>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Password</label>
