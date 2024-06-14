@@ -138,6 +138,7 @@ const QuizResult = () => {
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
             <p className="text-green-600 mb-4">Test report sent to your email successfully.</p>
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
+              <button onClick={handleReviewAnswers} className="bg-yellow-600 text-white px-4 py-2 rounded-lg">Review Answers</button>
               <button onClick={handleGoHome} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Go Home</button>
               <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded-lg">Logout</button>
             </div>
