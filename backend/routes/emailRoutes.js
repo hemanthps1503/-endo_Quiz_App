@@ -1,43 +1,62 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
-const PDFDocument = require('pdfkit');
 const path = require('path');
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const router = express.Router();
 require('dotenv').config();
 
 const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
-  const tempFilePath = path.join(__dirname, '../temp-results.pdf');
-  const newResult = `Username: ${username}    Total Questions: ${totalQuestions}    Correct Answers: ${correctAnswers}    Wrong Answers: ${wrongAnswers}\n\n`;
+  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n\n`;
 
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream(tempFilePath);
+  let pdfDoc;
 
-    doc.pipe(writeStream);
+  if (fs.existsSync(filePath)) {
+    const existingPdfBytes = fs.readFileSync(filePath);
+    pdfDoc = await PDFDocument.load(existingPdfBytes);
+  } else {
+    pdfDoc = await PDFDocument.create();
+  }
 
-    // Append existing entries if the file exists
-    if (fs.existsSync(filePath)) {
-      const existingPDF = fs.readFileSync(filePath);
-      doc.text(existingPDF.toString());
+  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+  const pages = pdfDoc.getPages();
+  let page;
+
+  if (pages.length > 0) {
+    page = pages[pages.length - 1];
+  } else {
+    page = pdfDoc.addPage();
+  }
+
+  const { height } = page.getSize();
+  const fontSize = 12;
+  const text = newResult.split('\n');
+  let yOffset = height - 24;
+
+  if (pages.length > 0) {
+    const lastPageTextHeight = (text.length * fontSize) + 24;
+    if (yOffset < lastPageTextHeight) {
+      page = pdfDoc.addPage();
+      yOffset = height - 24;
     }
+  }
 
-    // Append new result
-    doc.text(newResult);
-    doc.end();
-
-    writeStream.on('finish', () => {
-      fs.renameSync(tempFilePath, filePath);
-      console.log('PDF updated successfully');
-      resolve(filePath);
+  text.forEach(line => {
+    page.drawText(line, {
+      x: 50,
+      y: yOffset,
+      size: fontSize,
+      font: timesRomanFont,
+      color: rgb(0, 0, 0),
     });
-
-    writeStream.on('error', (err) => {
-      console.error('Error updating PDF:', err);
-      reject(err);
-    });
+    yOffset -= fontSize + 8;
   });
+
+  const pdfBytes = await pdfDoc.save();
+  fs.writeFileSync(filePath, pdfBytes);
+
+  return filePath;
 };
 
 router.post('/send-email', async (req, res) => {
