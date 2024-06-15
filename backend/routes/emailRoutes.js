@@ -9,22 +9,21 @@ require('dotenv').config();
 const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
   const tempFilePath = path.join(__dirname, '../temp-results.pdf');
-  const newResult = `Username: ${username}    Total Questions: ${totalQuestions}   Correct Answers: ${correctAnswers}\n`;
-
-  // Collect existing entries
-  let existingEntries = '';
-
-  if (fs.existsSync(filePath)) {
-    const existingPDF = fs.readFileSync(filePath, 'utf8');
-    existingEntries = existingPDF;
-  }
+  const newResult = `Username: ${username}    Total Questions: ${totalQuestions}    Correct Answers: ${correctAnswers}    Wrong Answers: ${wrongAnswers}\n\n`;
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument();
     const writeStream = fs.createWriteStream(tempFilePath);
 
     doc.pipe(writeStream);
-    doc.text(existingEntries);
+
+    // Append existing entries if the file exists
+    if (fs.existsSync(filePath)) {
+      const existingPDF = fs.readFileSync(filePath);
+      doc.text(existingPDF.toString());
+    }
+
+    // Append new result
     doc.text(newResult);
     doc.end();
 
@@ -59,9 +58,9 @@ router.post('/send-email', async (req, res) => {
 
     let mailOptions = {
       from: `"Quiz App" <${process.env.EMAIL_USER}>`,
-      to: "hemanth66ps@gmail.com",
+      to: email,
       subject: 'Quiz Test Report',
-      text: `Hello admin,\n\nYour quiz report is attached as a PDF.\n\nBest regards,\nQuiz App Team`,
+      text: `Hi ${username},\n\nYour quiz report is attached as a PDF.\n\nBest regards,\nQuiz App Team`,
       attachments: [
         {
           filename: 'test-results.pdf',
