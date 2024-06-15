@@ -8,9 +8,10 @@ require('dotenv').config();
 
 const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
-  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n\n`;
+  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\n`;
 
   let pdfDoc;
+  let yOffset = 750; // Start position for text
 
   if (fs.existsSync(filePath)) {
     const existingPdfBytes = fs.readFileSync(filePath);
@@ -25,24 +26,25 @@ const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wro
 
   if (pages.length > 0) {
     page = pages[pages.length - 1];
+    const { height } = page.getSize();
+    const textHeight = height - yOffset; // Calculate used space on the page
+    if (textHeight + 100 > height) { // If there is not enough space, add a new page
+      page = pdfDoc.addPage();
+      yOffset = 750;
+    }
   } else {
     page = pdfDoc.addPage();
   }
 
-  const { height } = page.getSize();
+  const textLines = newResult.split('\n');
   const fontSize = 12;
-  const text = newResult.split('\n');
-  let yOffset = height - 24;
 
-  if (pages.length > 0) {
-    const lastPageTextHeight = (text.length * fontSize) + 24;
-    if (yOffset < lastPageTextHeight) {
+  textLines.forEach(line => {
+    if (yOffset < 50) { // Check if the current page has enough space
       page = pdfDoc.addPage();
-      yOffset = height - 24;
+      yOffset = 750;
     }
-  }
 
-  text.forEach(line => {
     page.drawText(line, {
       x: 50,
       y: yOffset,
@@ -50,7 +52,7 @@ const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wro
       font: timesRomanFont,
       color: rgb(0, 0, 0),
     });
-    yOffset -= fontSize + 8;
+    yOffset -= fontSize + 10; // Move the yOffset for the next line
   });
 
   const pdfBytes = await pdfDoc.save();
