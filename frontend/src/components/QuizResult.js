@@ -120,7 +120,7 @@ const QuizResult = () => {
       {emailSent && !showReview && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <p className="text-green-600 mb-4">Test report submitted successfully.</p>
+            <p className="text-green-600 mb-4">Test report sent to admin successfully.</p>
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
               <button onClick={handleReviewAnswers} className="bg-yellow-600 text-white px-4 py-2 rounded-lg">Review Answers</button>
               <button onClick={handleGoHome} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Go Home</button>
