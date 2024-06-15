@@ -64,7 +64,7 @@ const QuizList = ({ username }) => {
                 <div>
                   <h2 className="text-xl font-semibold text-white">{quiz.name}</h2>
                   <div className="text-white flex">
-                    <p className="mr-8">Total Questions: {quiz.total_questions}</p> {/* Increased the right margin */}
+                    <p className="mr-15">Total Questions: {quiz.total_questions}</p> {/* Increased the right margin */}
                     <p>Points: {quiz.points}</p>
                   </div>
                 </div>
