@@ -31,7 +31,9 @@ const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wro
     if (textHeight < 100) { // If there is not enough space, add a new page
       page = pdfDoc.addPage();
       yOffset = 750;
-    } 
+    } else {
+      yOffset = 750; // Start from the top if enough space
+    }
   } else {
     page = pdfDoc.addPage();
   }
