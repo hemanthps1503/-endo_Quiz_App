@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
-  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n`;
+  const newResult = `Username: ${username}  Total Questions: ${totalQuestions}  Correct Answers: ${correctAnswers}  Wrong Answers: ${wrongAnswers}\n`;
 
   let pdfDoc;
   let yOffset = 750; // Start position for text
