@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import QuizList from './components/Quizlist';
 import QuizInstructions from './components/QuizInstructions';
 import QuizDetails from './components/QuizDetails';
@@ -62,6 +63,9 @@ const App = () => {
     toast.success('User logged out successfully!');
   };
 
+  const location = useLocation();
+  const shouldShowHeader = !(location.pathname.startsWith('/quiz/') || location.pathname === '/login' || location.pathname === '/register');
+
   if (!isAuthChecked) {
     return <div>Loading...</div>;
   }
@@ -69,7 +73,13 @@ const App = () => {
   return (
     <>
       <ToastContainer />
-      <Router>
+      {shouldShowHeader && (
+        <div className="fixed top-0 left-0 w-full z-50 bg-white p-4 shadow flex justify-between items-center">
+          <div className="text-2xl font-bold text-purple-600">Øendo</div>
+          {isAuthenticated && <button onClick={handleLogout} className="text-blue-600">Logout</button>}
+        </div>
+      )}
+      <div className={shouldShowHeader ? "pt-20" : ""}>
         <Routes>
           <Route path="/" element={isAuthenticated ? <QuizList username={username} /> : <Navigate to="/login" />} />
           <Route path="/quiz/:id" element={isAuthenticated ? <QuizDetails /> : <Navigate to="/login" />} />
@@ -78,9 +88,15 @@ const App = () => {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register />} />
         </Routes>
-      </Router>
+      </div>
     </>
   );
 };
 
-export default App;
+const AppWrapper = () => (
+  <Router>
+    <App />
+  </Router>
+);
+
+export default AppWrapper;
