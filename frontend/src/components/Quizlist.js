@@ -28,8 +28,8 @@ const QuizList = ({ username }) => {
     }
   }, []);
 
-  const handleStartQuiz = (id) => {
-    navigate(`/quiz/${id}`);
+  const handleStartQuiz = (quiz) => {
+    navigate(`/quiz-instructions`, { state: { quiz } });
   };
 
   return (
@@ -68,7 +68,7 @@ const QuizList = ({ username }) => {
                 </div>
                 <button
                   className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 focus:bg-purple-800"
-                  onClick={() => handleStartQuiz(quiz.id)}
+                  onClick={() => handleStartQuiz(quiz)}
                 >
                   Solve Challenge
                 </button>
