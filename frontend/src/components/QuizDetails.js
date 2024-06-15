@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FiHelpCircle } from 'react-icons/fi'; // Import help icon from react-icons
 import QuestionPalette from './QuestionPalette'; // Import the QuestionPalette component
 
 const QuizDetails = () => {
@@ -13,6 +14,7 @@ const QuizDetails = () => {
   const [showWarning, setShowWarning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30); // Set timer to 30 seconds
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showHelp, setShowHelp] = useState(false); // State to control help message visibility
 
   const calculateResult = useCallback(() => {
     let correctAnswers = 0;
@@ -153,16 +155,24 @@ const QuizDetails = () => {
             )}
           </div>
         </div>
-        <div className="text-center text-gray-700 flex flex-col items-center bg-red-100 p-2 rounded-full">
-          <span className="font-semibold">Time Left:</span>
-          <span className="text-xl">{timeLeft}s</span>
+        <div className="flex items-center space-x-4">
+          <div className="text-center text-gray-700 flex flex-col items-center bg-red-100 p-2 rounded-full">
+            <span className="font-semibold">Time Left:</span>
+            <span className="text-xl">{timeLeft}s</span>
+          </div>
+          <button
+            className="bg-red-600 text-white p-2 rounded-full"
+            onClick={endRound}
+          >
+            End round
+          </button>
+          <button
+            className="bg-blue-600 text-white p-2 rounded-full"
+            onClick={() => setShowHelp(true)} // Show help message when clicked
+          >
+            <FiHelpCircle size={24} />
+          </button>
         </div>
-        <button
-          className="bg-red-600 text-white p-2 rounded-full"
-          onClick={endRound}
-        >
-          End round
-        </button>
       </div>
       <div className="flex flex-1 space-x-4">
         <div className="w-1/2 p-8 bg-white rounded-lg shadow">
@@ -257,6 +267,21 @@ const QuizDetails = () => {
                 End Test
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showHelp && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+            <h2 className="text-xl font-semibold mb-4">Need Help?</h2>
+            <p className="mb-6">Please send your query after the test to <a href="mailto:endo@gmail.com" className="text-blue-600">endo@gmail.com</a>. We will assist you soon.</p>
+            <button
+              className="bg-gray-200 p-2 rounded-full"
+              onClick={() => setShowHelp(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
