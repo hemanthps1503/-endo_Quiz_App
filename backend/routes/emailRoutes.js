@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wrongAnswers) => {
   const filePath = path.join(__dirname, '../test-results.pdf');
-  const newResult = `Username: ${username}  Total Questions: ${totalQuestions}  Correct Answers: ${correctAnswers}  \n\n`;
+  const newResult = `Username: ${username}\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nWrong Answers: ${wrongAnswers}\n\n`;
 
   let pdfDoc;
   let yOffset = 750; // Start position for text
@@ -31,6 +31,8 @@ const generateOrUpdatePDF = async (username, totalQuestions, correctAnswers, wro
     if (textHeight + 100 > height) { // If there is not enough space, add a new page
       page = pdfDoc.addPage();
       yOffset = 750;
+    } else {
+      yOffset -= textHeight; // Adjust yOffset for existing text
     }
   } else {
     page = pdfDoc.addPage();
