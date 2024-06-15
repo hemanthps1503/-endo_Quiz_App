@@ -63,8 +63,10 @@ const QuizList = ({ username }) => {
               >
                 <div>
                   <h2 className="text-xl font-semibold text-white">{quiz.name}</h2>
-                  <p className="text-white">Total Questions: {quiz.total_questions}</p>
-                  <p className="text-white">Points: {quiz.points}</p>
+                  <div className="text-white flex">
+                    <p className="mr-4">Total Questions: {quiz.total_questions}</p>
+                    <p>Points: {quiz.points}</p>
+                  </div>
                 </div>
                 <button
                   className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 focus:bg-purple-800"
