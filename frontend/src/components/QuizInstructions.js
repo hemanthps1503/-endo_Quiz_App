@@ -19,9 +19,9 @@ const QuizInstructions = () => {
         <p className="text-lg mb-4">Points per Question: {quiz.points}</p>
         <p className="text-lg mb-4">Total Time: 30 seconds</p>
         <p className="text-lg mb-4">Mark for Review: You can mark questions to review them at the end of the test.</p>
-        <p className="text-lg mb-4">Marked for Review questions will be displayed in <strong style={{ color: 'blue' }}>blue</strong> color.
+        <p className="text-lg mb-4">Questions marked for review will be displayed in <strong style={{ color: 'blue' }}>blue</strong> color.
         </p>
-        <p className="text-lg mb-4"> Unmarked for Review questions will be displayed in <strong style={{ color: 'green' }}>green</strong> color.</p>
+        <p className="text-lg mb-4">Questions unmarked for review will be displayed in <strong style={{ color: 'green' }}>green</strong> color.</p>
         <p className="text-lg mb-4">Unanswered questions will be displayed in <strong style={{ color: 'red' }}>red</strong> color.
         </p>
         <h2 className="text-2xl font-semibold mb-4 text-red-600">Instructions:</h2>
