@@ -17,7 +17,7 @@ const QuizInstructions = () => {
         <p className="text-xl mb-4">You are about to start the <strong>{quiz.name}</strong> quiz.</p>
         <p className="text-lg mb-4">Total Questions: {quiz.total_questions}</p>
         <p className="text-lg mb-4">Points per Question: {quiz.points}</p>
-        <p className="text-lg mb-4">Total Time: 30 minutes</p>
+        <p className="text-lg mb-4">Total Time: 30 seconds</p>
         <p className="text-lg mb-4">Mark for Review: You can mark questions to review them at the end of the test.</p>
         <h2 className="text-2xl font-semibold mb-4 text-red-600">Instructions:</h2>
         <ul className="list-disc list-inside mb-4">
